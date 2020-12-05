@@ -20,6 +20,5 @@ public class PokedexController {
     @GetMapping(PokedexUrls.GET_ALL)
     public ResponseEntity<List<Pokemon>> index(){
         return ResponseEntity.ok().body(service.getAllPokemons());
-
     }
 }
