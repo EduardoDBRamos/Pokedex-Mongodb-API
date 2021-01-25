@@ -1,0 +1,34 @@
+version: '3.1'
+
+services:
+  db:
+    image: mongo
+    environment:
+      MONGO_INITDB_DATABASE: pokedex
+    ports:
+      - 27017:27017
+    networks:
+      - spring-mongo-net
+
+  dbseed:
+    build: ./mongo_seed
+    links:
+      - db
+
+  app:
+    build: .
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://db:27017/pokedex
+    container_name: pokedex-api
+    ports:
+      - 8182:8080
+    depends_on:
+      - db
+    links:
+      - db
+    networks:
+      - spring-mongo-net
+
+networks:
+  spring-mongo-net:
+    driver: bridge
