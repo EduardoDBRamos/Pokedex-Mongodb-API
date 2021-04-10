@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,7 +38,8 @@ class PokedexControllerTest {
     @DisplayName("Call getall URL with success")
     @Test
     void callGetAllPokemonsWithSuccess() throws Exception {
-        Pokemon bulbasaur = new Pokemon("Bulbasaur", "Grass");
+        Pokemon bulbasaur =
+                new Pokemon(1, "Bulbasaur", Arrays.asList("Grass"));
         List<Pokemon> mockList = Collections.singletonList(bulbasaur);
         when(service.getAllPokemons()).thenReturn(mockList);
 
@@ -46,14 +48,15 @@ class PokedexControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(HttpStatus.OK.value())).andReturn();
 
-        assertEquals("[{\"name\":\"Bulbasaur\",\"type\":\"Grass\"}]",
+        assertEquals("[{\"id\":1,\"name\":\"Bulbasaur\",\"type\":[\"Grass\"]}]",
                 result.getResponse().getContentAsString());
     }
 
     @DisplayName("Call getall URL without base URL")
     @Test
     void callGetAllUrlWithoutBaseUrl() throws Exception {
-        Pokemon bulbasaur = new Pokemon("Bulbasaur", "Grass");
+        Pokemon bulbasaur =
+                new Pokemon(1, "Bulbasaur", Arrays.asList("Grass"));
         List<Pokemon> mockList = Collections.singletonList(bulbasaur);
         when(service.getAllPokemons()).thenReturn(mockList);
 
