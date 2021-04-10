@@ -15,4 +15,8 @@ public class PokedexService {
     public List<Pokemon> getAllPokemons() {
         return repository.findAll();
     }
+
+    public Pokemon getPokemonById(int i) {
+        return repository.findById(i);
+    }
 }

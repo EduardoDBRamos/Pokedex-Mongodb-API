@@ -19,4 +19,12 @@ public class Pokemon {
     private int id;
     private String name;
     private List<String> type;
+
+    @Override
+    public String toString(){
+        return String.format(
+                "Pokemon[id=%s, name=%s, types=%s]",
+                id, name, type.toString()
+        );
+    }
 }

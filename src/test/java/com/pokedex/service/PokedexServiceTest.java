@@ -36,11 +36,36 @@ class PokedexServiceTest {
     @Test
     void getAllPokemons(){
         List<Pokemon> expectedList = Collections.singletonList(
-                new Pokemon(1, "Bulbasaur", Arrays.asList("Grass")));
+                new Pokemon(1, "Bulbasaur", Collections.singletonList("Grass")));
         when(repository.findAll()).thenReturn(expectedList);
 
         List<Pokemon> returnService = service.getAllPokemons();
 
         Assertions.assertEquals(expectedList, returnService);
+    }
+
+    @DisplayName("Get correct pokemon by Id")
+    @Test
+    void getPokemonById(){
+        //GIVEN
+        Pokemon bulbasaur = new Pokemon(1, "Bulbasaur", Collections.singletonList("Grass"));
+        Pokemon ivysaur = new Pokemon(2, "Ivysaur", Collections.singletonList("Grass"));
+        Pokemon venusaur = new Pokemon(3, "Venusaur", Collections.singletonList("Grass"));
+
+        List<Pokemon> pokemonsList = Arrays.asList(bulbasaur, ivysaur, venusaur);
+        //WHEN
+        when(repository.findById(1)).thenReturn(pokemonsList.get(0));
+        when(repository.findById(2)).thenReturn(pokemonsList.get(1));
+        when(repository.findById(3)).thenReturn(pokemonsList.get(2));
+
+        //ASSERT
+        Pokemon returnService = service.getPokemonById(1);
+        Assertions.assertEquals(bulbasaur, returnService);
+
+        returnService = service.getPokemonById(2);
+        Assertions.assertEquals(ivysaur, returnService);
+
+        returnService = service.getPokemonById(3);
+        Assertions.assertEquals(venusaur, returnService);
     }
 }
