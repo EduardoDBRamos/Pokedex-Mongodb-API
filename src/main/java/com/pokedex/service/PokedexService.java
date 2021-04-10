@@ -1,16 +1,18 @@
 package com.pokedex.service;
 
 import com.pokedex.model.Pokemon;
-import com.pokedex.resource.PokedexResource;
+import com.pokedex.repository.PokedexRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class PokedexService {
-    PokedexResource resource = new PokedexResource();
+    @Autowired
+    private PokedexRepository repository;
 
     public List<Pokemon> getAllPokemons() {
-        return resource.getAll();
+        return repository.findAll();
     }
 }

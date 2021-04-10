@@ -1,7 +1,7 @@
 package com.pokedex.service;
 
 import com.pokedex.model.Pokemon;
-import com.pokedex.resource.PokedexResource;
+import com.pokedex.repository.PokedexRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.Assert;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,7 +23,7 @@ class PokedexServiceTest {
     private PokedexService service;
 
     @Mock
-    PokedexResource resource;
+    PokedexRepository repository;
 
     @DisplayName("Confirm method existence")
     @Test
@@ -34,8 +35,9 @@ class PokedexServiceTest {
     @DisplayName("Get all pokemons successfully")
     @Test
     void getAllPokemons(){
-        List<Pokemon> expectedList = Collections.singletonList(new Pokemon("Bulbasaur", "Grass"));
-        when(resource.getAll()).thenReturn(expectedList);
+        List<Pokemon> expectedList = Collections.singletonList(
+                new Pokemon(1, "Bulbasaur", Arrays.asList("Grass")));
+        when(repository.findAll()).thenReturn(expectedList);
 
         List<Pokemon> returnService = service.getAllPokemons();
 
