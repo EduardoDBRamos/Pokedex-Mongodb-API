@@ -19,11 +19,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,16 +34,25 @@ class PokedexControllerTest {
     @MockBean
     PokedexService service;
 
+    @DisplayName("Call getall URL without base URL")
+    @Test
+    void callGetAllUrlWithoutBaseUrl() throws Exception {
+        mockMvc.perform(
+                get("/getAll")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(HttpStatus.NOT_FOUND.value()));
+    }
+
     @DisplayName("Call getall URL with success")
     @Test
     void callGetAllPokemonsWithSuccess() throws Exception {
         Pokemon bulbasaur =
-                new Pokemon(1, "Bulbasaur", Arrays.asList("Grass"));
+                new Pokemon(1, "Bulbasaur", Collections.singletonList("Grass"));
         List<Pokemon> mockList = Collections.singletonList(bulbasaur);
         when(service.getAllPokemons()).thenReturn(mockList);
 
         MvcResult result = mockMvc.perform(
-                get(PokedexUrls.URL_BASE + PokedexUrls.GET_ALL)
+                get("/pokedex/getAll")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(HttpStatus.OK.value())).andReturn();
 
@@ -52,17 +60,42 @@ class PokedexControllerTest {
                 result.getResponse().getContentAsString());
     }
 
-    @DisplayName("Call getall URL without base URL")
+    @DisplayName("Get a pokemon by ID passing int return success")
     @Test
-    void callGetAllUrlWithoutBaseUrl() throws Exception {
+    void callGetPokemonByID() throws Exception {
         Pokemon bulbasaur =
-                new Pokemon(1, "Bulbasaur", Arrays.asList("Grass"));
-        List<Pokemon> mockList = Collections.singletonList(bulbasaur);
-        when(service.getAllPokemons()).thenReturn(mockList);
+                new Pokemon(1, "Bulbasaur", Collections.singletonList("Grass"));
+        when(service.getPokemon(anyInt())).thenReturn(bulbasaur);
 
-        mockMvc.perform(
-                get(PokedexUrls.GET_ALL)
+        MvcResult result = mockMvc.perform(
+                get("/pokedex/getPokemon/1")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is(HttpStatus.NOT_FOUND.value()));
+                .andExpect(status().is(HttpStatus.OK.value())).andReturn();
+
+        assertEquals("{\"id\":1,\"name\":\"Bulbasaur\",\"type\":[\"Grass\"]}",
+                result.getResponse().getContentAsString());
+
     }
+
+    @DisplayName("Pass a string as parameter on Id parameter return error")
+    @Test
+    void callGetPokemonByIdPassingString() throws Exception{
+        mockMvc.perform(
+                get("/pokedex/getPokemon/teste")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
+    }
+
+    @DisplayName("Redirect /getPokemon without Parameter to /getAll with success")
+    @Test
+    void redirectGetPokemonWithoutParameterToGetAll() throws Exception {
+        MvcResult result = mockMvc.perform(
+                get("/pokedex/getPokemon")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(HttpStatus.PERMANENT_REDIRECT.value()))
+                .andReturn();
+
+        assertEquals("forward:/getAll", result.getResponse().getContentAsString());
+    }
+
 }

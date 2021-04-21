@@ -59,13 +59,13 @@ class PokedexServiceTest {
         when(repository.findById(3)).thenReturn(pokemonsList.get(2));
 
         //ASSERT
-        Pokemon returnService = service.getPokemonById(1);
+        Pokemon returnService = service.getPokemon(1);
         Assertions.assertEquals(bulbasaur, returnService);
 
-        returnService = service.getPokemonById(2);
+        returnService = service.getPokemon(2);
         Assertions.assertEquals(ivysaur, returnService);
 
-        returnService = service.getPokemonById(3);
+        returnService = service.getPokemon(3);
         Assertions.assertEquals(venusaur, returnService);
     }
 }
