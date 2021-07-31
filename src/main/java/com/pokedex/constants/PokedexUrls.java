@@ -1,7 +1,5 @@
 package com.pokedex.constants;
 
-import java.net.URI;
-
 public class PokedexUrls {
     public static final String URL_BASE = "/pokedex";
 

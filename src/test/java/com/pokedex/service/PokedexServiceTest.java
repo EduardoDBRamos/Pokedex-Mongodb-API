@@ -36,7 +36,7 @@ class PokedexServiceTest {
     @Test
     void getAllPokemons(){
         List<Pokemon> expectedList = Collections.singletonList(
-                new Pokemon(1, "Bulbasaur", Collections.singletonList("Grass")));
+                new Pokemon(1L, "Bulbasaur", Collections.singletonList("Grass")));
         when(repository.findAll()).thenReturn(expectedList);
 
         List<Pokemon> returnService = service.getAllPokemons();
@@ -48,24 +48,24 @@ class PokedexServiceTest {
     @Test
     void getPokemonById(){
         //GIVEN
-        Pokemon bulbasaur = new Pokemon(1, "Bulbasaur", Collections.singletonList("Grass"));
-        Pokemon ivysaur = new Pokemon(2, "Ivysaur", Collections.singletonList("Grass"));
-        Pokemon venusaur = new Pokemon(3, "Venusaur", Collections.singletonList("Grass"));
+        Pokemon bulbasaur = new Pokemon(1L, "Bulbasaur", Collections.singletonList("Grass"));
+        Pokemon ivysaur = new Pokemon(2L, "Ivysaur", Collections.singletonList("Grass"));
+        Pokemon venusaur = new Pokemon(3L, "Venusaur", Collections.singletonList("Grass"));
 
         List<Pokemon> pokemonsList = Arrays.asList(bulbasaur, ivysaur, venusaur);
         //WHEN
-        when(repository.findById(1)).thenReturn(pokemonsList.get(0));
-        when(repository.findById(2)).thenReturn(pokemonsList.get(1));
-        when(repository.findById(3)).thenReturn(pokemonsList.get(2));
+        when(repository.findById("1")).thenReturn(java.util.Optional.ofNullable(pokemonsList.get(0)));
+        when(repository.findById("2")).thenReturn(java.util.Optional.ofNullable(pokemonsList.get(1)));
+        when(repository.findById("3")).thenReturn(java.util.Optional.ofNullable(pokemonsList.get(2)));
 
         //ASSERT
-        Pokemon returnService = service.getPokemon(1);
+        Pokemon returnService = service.getPokemon(1L);
         Assertions.assertEquals(bulbasaur, returnService);
 
-        returnService = service.getPokemon(2);
+        returnService = service.getPokemon(2L);
         Assertions.assertEquals(ivysaur, returnService);
 
-        returnService = service.getPokemon(3);
+        returnService = service.getPokemon(3L);
         Assertions.assertEquals(venusaur, returnService);
     }
 }
