@@ -18,6 +18,10 @@ public class PokedexService {
     }
 
     public Pokemon getPokemon(Long id) {
-        return repository.findById(String.valueOf(id)).orElse(new Pokemon(0L, "noPokemonId", Collections.singletonList("noPokemonType")));
+        return repository.findById(String.valueOf(id)).orElse(new Pokemon());
+    }
+
+    public Pokemon getPokemon(String name) {
+        return repository.findByName(name);
     }
 }

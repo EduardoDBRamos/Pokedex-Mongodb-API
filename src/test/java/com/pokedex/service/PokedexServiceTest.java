@@ -32,7 +32,7 @@ class PokedexServiceTest {
                 "GetAllPokemons method does not exists");
     }
 
-    @DisplayName("Get all pokemons successfully")
+    @DisplayName("Should get all pokemons successfully")
     @Test
     void getAllPokemons(){
         List<Pokemon> expectedList = Collections.singletonList(
@@ -44,7 +44,7 @@ class PokedexServiceTest {
         Assertions.assertEquals(expectedList, returnService);
     }
 
-    @DisplayName("Get correct pokemon by Id")
+    @DisplayName("Should get correct pokemon by Id")
     @Test
     void getPokemonById(){
         //GIVEN
@@ -67,5 +67,24 @@ class PokedexServiceTest {
 
         returnService = service.getPokemon(3L);
         Assertions.assertEquals(venusaur, returnService);
+    }
+
+    @DisplayName("Should get a pokemon by name")
+    @Test
+    void getPokemonByName(){
+        //GIVEN
+        Pokemon bulbasaur = new Pokemon(1L, "Bulbasaur", Collections.singletonList("Grass"));
+        Pokemon ivysaur = new Pokemon(2L, "Ivysaur", Collections.singletonList("Grass"));
+
+        //WHEN
+        when(repository.findByName("Bulbasaur")).thenReturn(bulbasaur);
+        when(repository.findByName("Ivysaur")).thenReturn(ivysaur);
+
+        //ASSERT
+        Pokemon returnService = service.getPokemon("Bulbasaur");
+        Assertions.assertEquals(bulbasaur, returnService);
+
+        returnService = service.getPokemon("Ivysaur");
+        Assertions.assertEquals(ivysaur, returnService);
     }
 }

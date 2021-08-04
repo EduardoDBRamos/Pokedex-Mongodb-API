@@ -75,13 +75,21 @@ class PokedexControllerTest {
 
     }
 
-    @DisplayName("Pass a string as parameter on Id parameter return error")
+    @DisplayName("Pass a correct pokemon name as parameter on get method")
     @Test
-    void callGetPokemonByIdPassingString() throws Exception{
-        mockMvc.perform(
-                get("/pokedex/getPokemon/teste")
+    void callGetPokemonByNameACorrectName() throws Exception {
+        //GIVEN
+        Pokemon bulbasaur =
+                new Pokemon(1L, "Bulbasaur", Collections.singletonList("Grass"));
+        //WHEN
+        when(service.getPokemon("Bulbasaur")).thenReturn(bulbasaur);
+
+        //ASSERT
+        MvcResult result = mockMvc.perform(
+                get("/pokedex/getPokemon/Bulbasaur")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
+                .andExpect(status().is(HttpStatus.OK.value())).andReturn();
+        assertEquals("", result.getResponse().getContentAsString());
     }
 
 }
