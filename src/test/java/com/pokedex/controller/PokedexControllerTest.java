@@ -18,7 +18,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -63,10 +64,11 @@ class PokedexControllerTest {
     void callGetPokemonByID() throws Exception {
         Pokemon bulbasaur =
                 new Pokemon(1L, "Bulbasaur", Collections.singletonList("Grass"));
-        when(service.getPokemon(anyLong())).thenReturn(bulbasaur);
+        when(service.getPokemon(eq(1L), anyString())).thenReturn(bulbasaur);
 
         MvcResult result = mockMvc.perform(
-                get("/pokedex/getPokemon/1")
+                get("/pokedex/getPokemon")
+                        .param("number", "1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(HttpStatus.OK.value())).andReturn();
 
@@ -82,14 +84,15 @@ class PokedexControllerTest {
         Pokemon bulbasaur =
                 new Pokemon(1L, "Bulbasaur", Collections.singletonList("Grass"));
         //WHEN
-        when(service.getPokemon("Bulbasaur")).thenReturn(bulbasaur);
+        when(service.getPokemon(0L, "Bulbasaur")).thenReturn(bulbasaur);
 
         //ASSERT
         MvcResult result = mockMvc.perform(
-                get("/pokedex/getPokemon/Bulbasaur")
+                get("/pokedex/getPokemon")
+                        .param("name", "Bulbasaur")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(HttpStatus.OK.value())).andReturn();
-        assertEquals("", result.getResponse().getContentAsString());
+        assertEquals("{\"id\":1,\"name\":\"Bulbasaur\",\"type\":[\"Grass\"]}", result.getResponse().getContentAsString());
     }
 
 }

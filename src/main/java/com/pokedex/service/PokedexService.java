@@ -5,7 +5,6 @@ import com.pokedex.repository.PokedexRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -17,11 +16,8 @@ public class PokedexService {
         return repository.findAll();
     }
 
-    public Pokemon getPokemon(Long id) {
-        return repository.findById(String.valueOf(id)).orElse(new Pokemon());
-    }
+    public Pokemon getPokemon(Long id ,String name) {
+        return repository.findById(String.valueOf(id)).orElse(repository.findByName(name));
 
-    public Pokemon getPokemon(String name) {
-        return repository.findByName(name);
     }
 }

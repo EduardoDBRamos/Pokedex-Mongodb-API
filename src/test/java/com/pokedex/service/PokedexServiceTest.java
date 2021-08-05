@@ -59,13 +59,13 @@ class PokedexServiceTest {
         when(repository.findById("3")).thenReturn(java.util.Optional.ofNullable(pokemonsList.get(2)));
 
         //ASSERT
-        Pokemon returnService = service.getPokemon(1L);
+        Pokemon returnService = service.getPokemon(1L, "");
         Assertions.assertEquals(bulbasaur, returnService);
 
-        returnService = service.getPokemon(2L);
+        returnService = service.getPokemon(2L, "");
         Assertions.assertEquals(ivysaur, returnService);
 
-        returnService = service.getPokemon(3L);
+        returnService = service.getPokemon(3L, "");
         Assertions.assertEquals(venusaur, returnService);
     }
 
@@ -81,10 +81,10 @@ class PokedexServiceTest {
         when(repository.findByName("Ivysaur")).thenReturn(ivysaur);
 
         //ASSERT
-        Pokemon returnService = service.getPokemon("Bulbasaur");
+        Pokemon returnService = service.getPokemon(0L, "Bulbasaur");
         Assertions.assertEquals(bulbasaur, returnService);
 
-        returnService = service.getPokemon("Ivysaur");
+        returnService = service.getPokemon(0L, "Ivysaur");
         Assertions.assertEquals(ivysaur, returnService);
     }
 }
