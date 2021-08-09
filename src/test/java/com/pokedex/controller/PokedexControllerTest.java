@@ -62,13 +62,16 @@ class PokedexControllerTest {
     @DisplayName("Get a pokemon by ID passing int return success")
     @Test
     void callGetPokemonByID() throws Exception {
+        //GIVEN
         Pokemon bulbasaur =
                 new Pokemon(1L, "Bulbasaur", Collections.singletonList("Grass"));
-        when(service.getPokemon(eq(1L), anyString())).thenReturn(bulbasaur);
+        //WHEN
+        when(service.
+                getPokemonId(eq(1L))).thenReturn(bulbasaur);
 
+        //ASSERT
         MvcResult result = mockMvc.perform(
-                get("/pokedex/getPokemon")
-                        .param("number", "1")
+                get("/pokedex/number/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(HttpStatus.OK.value())).andReturn();
 
@@ -81,18 +84,17 @@ class PokedexControllerTest {
     @Test
     void callGetPokemonByNameACorrectName() throws Exception {
         //GIVEN
-        Pokemon bulbasaur =
-                new Pokemon(1L, "Bulbasaur", Collections.singletonList("Grass"));
+        List<Pokemon> bulbasaur = Collections.singletonList(
+                new Pokemon(1L, "Bulbasaur", Collections.singletonList("Grass")));
         //WHEN
-        when(service.getPokemon(0L, "Bulbasaur")).thenReturn(bulbasaur);
+        when(service.getPokemonName("Bulbasaur")).thenReturn(bulbasaur);
 
         //ASSERT
         MvcResult result = mockMvc.perform(
-                get("/pokedex/getPokemon")
-                        .param("name", "Bulbasaur")
+                get("/pokedex/name/Bulbasaur")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(HttpStatus.OK.value())).andReturn();
-        assertEquals("{\"id\":1,\"name\":\"Bulbasaur\",\"type\":[\"Grass\"]}", result.getResponse().getContentAsString());
+        assertEquals("[{\"id\":1,\"name\":\"Bulbasaur\",\"type\":[\"Grass\"]}]", result.getResponse().getContentAsString());
     }
 
 }

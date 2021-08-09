@@ -59,13 +59,13 @@ class PokedexServiceTest {
         when(repository.findById("3")).thenReturn(java.util.Optional.ofNullable(pokemonsList.get(2)));
 
         //ASSERT
-        Pokemon returnService = service.getPokemon(1L, "");
+        Pokemon returnService = service.getPokemonId(1L);
         Assertions.assertEquals(bulbasaur, returnService);
 
-        returnService = service.getPokemon(2L, "");
+        returnService = service.getPokemonId(2L);
         Assertions.assertEquals(ivysaur, returnService);
 
-        returnService = service.getPokemon(3L, "");
+        returnService = service.getPokemonId(3L);
         Assertions.assertEquals(venusaur, returnService);
     }
 
@@ -73,18 +73,18 @@ class PokedexServiceTest {
     @Test
     void getPokemonByName(){
         //GIVEN
-        Pokemon bulbasaur = new Pokemon(1L, "Bulbasaur", Collections.singletonList("Grass"));
-        Pokemon ivysaur = new Pokemon(2L, "Ivysaur", Collections.singletonList("Grass"));
+        List<Pokemon> bulbasaur = Collections.singletonList(new Pokemon(1L, "Bulbasaur", Collections.singletonList("Grass")));
+        List<Pokemon> ivysaur = Collections.singletonList(new Pokemon(2L, "Ivysaur", Collections.singletonList("Grass")));
 
         //WHEN
         when(repository.findByName("Bulbasaur")).thenReturn(bulbasaur);
         when(repository.findByName("Ivysaur")).thenReturn(ivysaur);
 
         //ASSERT
-        Pokemon returnService = service.getPokemon(0L, "Bulbasaur");
+        List<Pokemon> returnService = service.getPokemonName("Bulbasaur");
         Assertions.assertEquals(bulbasaur, returnService);
 
-        returnService = service.getPokemon(0L, "Ivysaur");
+        returnService = service.getPokemonName("Ivysaur");
         Assertions.assertEquals(ivysaur, returnService);
     }
 }
