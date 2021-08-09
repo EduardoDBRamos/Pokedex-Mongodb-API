@@ -87,4 +87,21 @@ class PokedexServiceTest {
         returnService = service.getPokemonName("Ivysaur");
         Assertions.assertEquals(ivysaur, returnService);
     }
+
+    @DisplayName("Should return pokemons with Grass type")
+    @Test
+    void getPokemonWithGrassType(){
+        //GIVEN
+        List<Pokemon> grassType = Arrays.asList(
+                new Pokemon(1L, "Bulbasaur", Collections.singletonList("Grass")),
+                new Pokemon(2L, "Ivysaur", Collections.singletonList("Grass")),
+                new Pokemon(3L, "Venusaur", Collections.singletonList("Grass"))
+        );
+        //WHEN
+        when(repository.findByType("Grass")).thenReturn(grassType);
+
+        //ASSERT
+        List<Pokemon> returnService = service.getPokemonsByType("Grass");
+        Assertions.assertEquals(grassType, returnService);
+    }
 }

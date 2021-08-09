@@ -6,4 +6,5 @@ public class PokedexUrls {
     public static final String GET_ALL = "/getAll";
     public static final String GET_POKEMON_NUMBER = "/number";
     public static final String GET_POKEMON_NAME = "/name";
+    public static final String GET_POKEMON_TYPE = "/type";
 }

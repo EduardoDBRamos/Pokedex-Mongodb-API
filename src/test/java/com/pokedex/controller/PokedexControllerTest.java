@@ -14,11 +14,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -95,6 +95,26 @@ class PokedexControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(HttpStatus.OK.value())).andReturn();
         assertEquals("[{\"id\":1,\"name\":\"Bulbasaur\",\"type\":[\"Grass\"]}]", result.getResponse().getContentAsString());
+    }
+
+    @DisplayName("Should return pokemons with water type")
+    @Test
+    void callGetPokemonByType() throws Exception {
+        //GIVEN
+        List<Pokemon> waterType = Arrays.asList(
+                new Pokemon(4L, "Squirtle", Collections.singletonList("Water")),
+                new Pokemon(5L, "Wartortle", Collections.singletonList("Water")),
+                new Pokemon(6L, "Blastoise", Collections.singletonList("Water"))
+        );
+        //WHEN
+        when(service.getPokemonsByType("water")).thenReturn(waterType);
+
+        //ASSERT
+        MvcResult result = mockMvc.perform(
+                get("/pokedex/type/water")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(HttpStatus.OK.value())).andReturn();
+        assertEquals("[{\"id\":4,\"name\":\"Squirtle\",\"type\":[\"Water\"]},{\"id\":5,\"name\":\"Wartortle\",\"type\":[\"Water\"]},{\"id\":6,\"name\":\"Blastoise\",\"type\":[\"Water\"]}]", result.getResponse().getContentAsString());
     }
 
 }

@@ -4,9 +4,7 @@ import com.pokedex.model.Pokemon;
 import com.pokedex.repository.PokedexRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -24,5 +22,9 @@ public class PokedexService {
 
     public Pokemon getPokemonId(long l) {
         return repository.findById(String.valueOf(l)).orElse(new Pokemon());
+    }
+
+    public List<Pokemon> getPokemonsByType(String type) {
+        return repository.findByType(type);
     }
 }

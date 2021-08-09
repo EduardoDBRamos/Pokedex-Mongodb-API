@@ -32,4 +32,10 @@ public class PokedexController {
             @PathVariable(name = "name") String name){
         return service.getPokemonName(name);
     }
+
+    @GetMapping(PokedexUrls.GET_POKEMON_TYPE+"/{type}")
+    public List<Pokemon> getPokemonType(
+            @PathVariable(name = "type") String type){
+        return service.getPokemonsByType(type);
+    }
 }

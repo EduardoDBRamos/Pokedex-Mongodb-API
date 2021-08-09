@@ -13,4 +13,7 @@ import java.util.List;
 public interface PokedexRepository extends MongoRepository<Pokemon, String> {
     @Query(value = "{name:{$regex:?0, $options: 'i'}}", fields = "{'id' : 1, 'name' : 1}")
     List<Pokemon> findByName(String name);
+
+    @Query(fields = "{'id' : 1, 'name' : 1}", value = "{type : {$regex:?0, $options: 'i'}}")
+    List<Pokemon> findByType(String name);
 }
