@@ -16,7 +16,15 @@ import java.util.List;
 @Document(collection = "pokemons")
 public class Pokemon {
     @Id
-    private int id;
+    private Long id;
     private String name;
     private List<String> type;
+
+    @Override
+    public String toString(){
+        return String.format(
+                "Pokemon[number=%s, name=%s, types=%s]",
+                id, name, type.toString()
+        );
+    }
 }

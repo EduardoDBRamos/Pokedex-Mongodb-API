@@ -32,15 +32,76 @@ class PokedexServiceTest {
                 "GetAllPokemons method does not exists");
     }
 
-    @DisplayName("Get all pokemons successfully")
+    @DisplayName("Should get all pokemons successfully")
     @Test
     void getAllPokemons(){
         List<Pokemon> expectedList = Collections.singletonList(
-                new Pokemon(1, "Bulbasaur", Arrays.asList("Grass")));
+                new Pokemon(1L, "Bulbasaur", Collections.singletonList("Grass")));
         when(repository.findAll()).thenReturn(expectedList);
 
         List<Pokemon> returnService = service.getAllPokemons();
 
         Assertions.assertEquals(expectedList, returnService);
+    }
+
+    @DisplayName("Should get correct pokemon by Id")
+    @Test
+    void getPokemonById(){
+        //GIVEN
+        Pokemon bulbasaur = new Pokemon(1L, "Bulbasaur", Collections.singletonList("Grass"));
+        Pokemon ivysaur = new Pokemon(2L, "Ivysaur", Collections.singletonList("Grass"));
+        Pokemon venusaur = new Pokemon(3L, "Venusaur", Collections.singletonList("Grass"));
+
+        List<Pokemon> pokemonsList = Arrays.asList(bulbasaur, ivysaur, venusaur);
+        //WHEN
+        when(repository.findById("1")).thenReturn(java.util.Optional.ofNullable(pokemonsList.get(0)));
+        when(repository.findById("2")).thenReturn(java.util.Optional.ofNullable(pokemonsList.get(1)));
+        when(repository.findById("3")).thenReturn(java.util.Optional.ofNullable(pokemonsList.get(2)));
+
+        //ASSERT
+        Pokemon returnService = service.getPokemonId(1L);
+        Assertions.assertEquals(bulbasaur, returnService);
+
+        returnService = service.getPokemonId(2L);
+        Assertions.assertEquals(ivysaur, returnService);
+
+        returnService = service.getPokemonId(3L);
+        Assertions.assertEquals(venusaur, returnService);
+    }
+
+    @DisplayName("Should get a pokemon by name")
+    @Test
+    void getPokemonByName(){
+        //GIVEN
+        List<Pokemon> bulbasaur = Collections.singletonList(new Pokemon(1L, "Bulbasaur", Collections.singletonList("Grass")));
+        List<Pokemon> ivysaur = Collections.singletonList(new Pokemon(2L, "Ivysaur", Collections.singletonList("Grass")));
+
+        //WHEN
+        when(repository.findByName("Bulbasaur")).thenReturn(bulbasaur);
+        when(repository.findByName("Ivysaur")).thenReturn(ivysaur);
+
+        //ASSERT
+        List<Pokemon> returnService = service.getPokemonName("Bulbasaur");
+        Assertions.assertEquals(bulbasaur, returnService);
+
+        returnService = service.getPokemonName("Ivysaur");
+        Assertions.assertEquals(ivysaur, returnService);
+    }
+
+    @DisplayName("Should return pokemons with Grass type")
+    @Test
+    void getPokemonWithGrassType(){
+        //GIVEN
+        List<Pokemon> grassType = Arrays.asList(
+                new Pokemon(1L, "Bulbasaur", Collections.singletonList("Grass")),
+                new Pokemon(2L, "Ivysaur", Collections.singletonList("Grass")),
+                new Pokemon(3L, "Venusaur", Collections.singletonList("Grass"))
+        );
+        //WHEN
+        when(repository.findByType("Grass")).thenReturn(grassType);
+
+        //ASSERT
+        List<Pokemon> returnService = service.getPokemonsByType("Grass");
+        Assertions.assertEquals(grassType, returnService);
     }
 }

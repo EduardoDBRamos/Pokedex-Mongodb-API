@@ -15,4 +15,16 @@ public class PokedexService {
     public List<Pokemon> getAllPokemons() {
         return repository.findAll();
     }
+
+    public List<Pokemon> getPokemonName(String name) {
+        return repository.findByName(name);
+    }
+
+    public Pokemon getPokemonId(long l) {
+        return repository.findById(String.valueOf(l)).orElse(new Pokemon());
+    }
+
+    public List<Pokemon> getPokemonsByType(String type) {
+        return repository.findByType(type);
+    }
 }

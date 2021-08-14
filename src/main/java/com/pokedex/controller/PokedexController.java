@@ -5,11 +5,7 @@ import com.pokedex.model.Pokemon;
 import com.pokedex.service.PokedexService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,10 +17,25 @@ public class PokedexController {
     PokedexService service;
 
     @GetMapping(PokedexUrls.GET_ALL)
-    public ResponseEntity<List<Pokemon>> index(){
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(service.getAllPokemons());
+    public List<Pokemon> getAll(){
+        return service.getAllPokemons();
+    }
+
+    @GetMapping(PokedexUrls.GET_POKEMON_NUMBER+"/{number}")
+    public Pokemon getPokemonId(
+            @PathVariable(name = "number") Long number){
+        return service.getPokemonId(number);
+    }
+
+    @GetMapping(PokedexUrls.GET_POKEMON_NAME+"/{name}")
+    public List<Pokemon> getPokemonName(
+            @PathVariable(name = "name") String name){
+        return service.getPokemonName(name);
+    }
+
+    @GetMapping(PokedexUrls.GET_POKEMON_TYPE+"/{type}")
+    public List<Pokemon> getPokemonType(
+            @PathVariable(name = "type") String type){
+        return service.getPokemonsByType(type);
     }
 }
