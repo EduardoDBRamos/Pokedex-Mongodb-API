@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:alpine-slim
+FROM adoptopenjdk/openjdk11:alpine
 MAINTAINER Eduardo Ramos
 RUN apk update && apk add bash
 RUN mkdir -p /opt/app

@@ -2,19 +2,23 @@ package com.pokedex.service;
 
 import com.pokedex.model.Pokemon;
 import com.pokedex.repository.PokedexRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,9 +43,9 @@ class PokedexServiceTest {
                 new Pokemon(1L, "Bulbasaur", Collections.singletonList("Grass")));
         when(repository.findAll()).thenReturn(expectedList);
 
-        List<Pokemon> returnService = service.getAllPokemons();
+        ResponseEntity<List<Pokemon>> returnService = service.getAllPokemons();
 
-        Assertions.assertEquals(expectedList, returnService);
+        assertEquals(expectedList, returnService.getBody());
     }
 
     @DisplayName("Should get correct pokemon by Id")
@@ -59,14 +63,14 @@ class PokedexServiceTest {
         when(repository.findById("3")).thenReturn(java.util.Optional.ofNullable(pokemonsList.get(2)));
 
         //ASSERT
-        Pokemon returnService = service.getPokemonId(1L);
-        Assertions.assertEquals(bulbasaur, returnService);
+        ResponseEntity<Pokemon> returnService = service.getPokemonId(1L);
+        assertEquals(bulbasaur, returnService.getBody());
 
         returnService = service.getPokemonId(2L);
-        Assertions.assertEquals(ivysaur, returnService);
+        assertEquals(ivysaur, returnService.getBody());
 
         returnService = service.getPokemonId(3L);
-        Assertions.assertEquals(venusaur, returnService);
+        assertEquals(venusaur, returnService.getBody());
     }
 
     @DisplayName("Should get a pokemon by name")
@@ -77,15 +81,27 @@ class PokedexServiceTest {
         List<Pokemon> ivysaur = Collections.singletonList(new Pokemon(2L, "Ivysaur", Collections.singletonList("Grass")));
 
         //WHEN
-        when(repository.findByName("Bulbasaur")).thenReturn(bulbasaur);
-        when(repository.findByName("Ivysaur")).thenReturn(ivysaur);
+        when(repository.findByNameRegex("Bulbasaur")).thenReturn(bulbasaur);
+        when(repository.findByNameRegex("Ivysaur")).thenReturn(ivysaur);
 
         //ASSERT
-        List<Pokemon> returnService = service.getPokemonName("Bulbasaur");
-        Assertions.assertEquals(bulbasaur, returnService);
+        ResponseEntity<List<Pokemon>> returnService = service.getPokemonName("Bulbasaur");
+        assertEquals(bulbasaur, returnService.getBody());
 
         returnService = service.getPokemonName("Ivysaur");
-        Assertions.assertEquals(ivysaur, returnService);
+        assertEquals(ivysaur, returnService.getBody());
+    }
+
+    @DisplayName("Can't find pokemons with name regex")
+    @Test
+    void cantFindPokemonsWithRegex(){
+        //WHEN
+        when(repository.findByNameRegex(any())).thenReturn(Collections.emptyList());
+
+        //ASSERT
+        ResponseEntity<List<Pokemon>> response = service.getPokemonName("NotExist");
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
     }
 
     @DisplayName("Should return pokemons with Grass type")
@@ -98,10 +114,24 @@ class PokedexServiceTest {
                 new Pokemon(3L, "Venusaur", Collections.singletonList("Grass"))
         );
         //WHEN
-        when(repository.findByType("Grass")).thenReturn(grassType);
+        when(repository.findByTypeRegex("Grass")).thenReturn(grassType);
 
         //ASSERT
-        List<Pokemon> returnService = service.getPokemonsByType("Grass");
-        Assertions.assertEquals(grassType, returnService);
+        ResponseEntity<List<Pokemon>> returnService = service.getPokemonsByType("Grass");
+        assertEquals(grassType, returnService.getBody());
+        assertEquals(HttpStatus.OK, returnService.getStatusCode());
+    }
+
+    @DisplayName("Can't find pokemons for unknown type")
+    @Test
+    void unknownPokemonType(){
+        //WHEN
+        when(repository.findByTypeRegex(any())).thenReturn(Collections.emptyList());
+
+        //ASSERT
+        ResponseEntity<List<Pokemon>> response = service.getPokemonsByType("UnknowType");
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
     }
 }
