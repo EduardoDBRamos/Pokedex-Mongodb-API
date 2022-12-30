@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
@@ -15,6 +16,7 @@ import org.springframework.util.Assert;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -29,10 +31,12 @@ class PokedexServiceTest {
     @Mock
     PokedexRepository repository;
 
+    private final Pageable paging = PageRequest.of(0, 2, Sort.by("id"));
+
     @DisplayName("Confirm method existence")
     @Test
     void callMethodGetAllPokemons() throws NoSuchMethodException {
-        Assert.notNull(service.getClass().getMethod("getAllPokemons"),
+        Assert.notNull(service.getClass().getMethod("getAllPokemons", Pageable.class),
                 "GetAllPokemons method does not exists");
     }
 
@@ -41,11 +45,13 @@ class PokedexServiceTest {
     void getAllPokemons(){
         List<Pokemon> expectedList = Collections.singletonList(
                 new Pokemon(1L, "Bulbasaur", Collections.singletonList("Grass")));
-        when(repository.findAll()).thenReturn(expectedList);
+        PageImpl<Pokemon> pageable = new PageImpl<>(expectedList);
 
-        ResponseEntity<List<Pokemon>> returnService = service.getAllPokemons();
+        when(repository.findAll(any(Pageable.class))).thenReturn(pageable);
 
-        assertEquals(expectedList, returnService.getBody());
+        ResponseEntity<Page<Pokemon>> returnService = service.getAllPokemons(paging);
+
+        assertEquals(expectedList, Objects.requireNonNull(returnService.getBody()).toList());
     }
 
     @DisplayName("Should get correct pokemon by Id")
@@ -58,9 +64,9 @@ class PokedexServiceTest {
 
         List<Pokemon> pokemonsList = Arrays.asList(bulbasaur, ivysaur, venusaur);
         //WHEN
-        when(repository.findById("1")).thenReturn(java.util.Optional.ofNullable(pokemonsList.get(0)));
-        when(repository.findById("2")).thenReturn(java.util.Optional.ofNullable(pokemonsList.get(1)));
-        when(repository.findById("3")).thenReturn(java.util.Optional.ofNullable(pokemonsList.get(2)));
+        when(repository.findById(1L)).thenReturn(java.util.Optional.ofNullable(pokemonsList.get(0)));
+        when(repository.findById(2L)).thenReturn(java.util.Optional.ofNullable(pokemonsList.get(1)));
+        when(repository.findById(3L)).thenReturn(java.util.Optional.ofNullable(pokemonsList.get(2)));
 
         //ASSERT
         ResponseEntity<Pokemon> returnService = service.getPokemonId(1L);
@@ -81,25 +87,25 @@ class PokedexServiceTest {
         List<Pokemon> ivysaur = Collections.singletonList(new Pokemon(2L, "Ivysaur", Collections.singletonList("Grass")));
 
         //WHEN
-        when(repository.findByNameRegex("Bulbasaur")).thenReturn(bulbasaur);
-        when(repository.findByNameRegex("Ivysaur")).thenReturn(ivysaur);
+        when(repository.findByNameRegex("Bulbasaur", paging)).thenReturn(new PageImpl<>(bulbasaur));
+        when(repository.findByNameRegex("Ivysaur", paging)).thenReturn(new PageImpl<>(ivysaur));
 
         //ASSERT
-        ResponseEntity<List<Pokemon>> returnService = service.getPokemonName("Bulbasaur");
-        assertEquals(bulbasaur, returnService.getBody());
+        ResponseEntity<Page<Pokemon>> returnService = service.getPokemonName("Bulbasaur", paging);
+        assertEquals(bulbasaur, Objects.requireNonNull(returnService.getBody()).toList());
 
-        returnService = service.getPokemonName("Ivysaur");
-        assertEquals(ivysaur, returnService.getBody());
+        returnService = service.getPokemonName("Ivysaur", paging);
+        assertEquals(ivysaur, Objects.requireNonNull(returnService.getBody()).toList());
     }
 
     @DisplayName("Can't find pokemons with name regex")
     @Test
     void cantFindPokemonsWithRegex(){
         //WHEN
-        when(repository.findByNameRegex(any())).thenReturn(Collections.emptyList());
+        when(repository.findByNameRegex(any(), any(Pageable.class))).thenReturn(new PageImpl<>(Collections.emptyList()));
 
         //ASSERT
-        ResponseEntity<List<Pokemon>> response = service.getPokemonName("NotExist");
+        ResponseEntity<Page<Pokemon>> response = service.getPokemonName("NotExist", paging);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNull(response.getBody());
     }
@@ -114,11 +120,11 @@ class PokedexServiceTest {
                 new Pokemon(3L, "Venusaur", Collections.singletonList("Grass"))
         );
         //WHEN
-        when(repository.findByTypeRegex("Grass")).thenReturn(grassType);
+        when(repository.findByTypeRegex("Grass", paging)).thenReturn(new PageImpl<>(grassType));
 
         //ASSERT
-        ResponseEntity<List<Pokemon>> returnService = service.getPokemonsByType("Grass");
-        assertEquals(grassType, returnService.getBody());
+        ResponseEntity<Page<Pokemon>> returnService = service.getPokemonsByType("Grass", paging);
+        assertEquals(grassType, Objects.requireNonNull(returnService.getBody()).toList());
         assertEquals(HttpStatus.OK, returnService.getStatusCode());
     }
 
@@ -126,10 +132,10 @@ class PokedexServiceTest {
     @Test
     void unknownPokemonType(){
         //WHEN
-        when(repository.findByTypeRegex(any())).thenReturn(Collections.emptyList());
+        when(repository.findByTypeRegex(any(), any(Pageable.class))).thenReturn(new PageImpl<>(Collections.emptyList()));
 
         //ASSERT
-        ResponseEntity<List<Pokemon>> response = service.getPokemonsByType("UnknowType");
+        ResponseEntity<Page<Pokemon>> response = service.getPokemonsByType("UnknowType", paging);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNull(response.getBody());

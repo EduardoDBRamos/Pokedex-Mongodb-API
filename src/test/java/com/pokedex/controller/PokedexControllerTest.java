@@ -8,6 +8,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +31,8 @@ class PokedexControllerTest {
     @MockBean
     private PokedexService service;
 
+    private final Pageable paging = PageRequest.of(0, 10, Sort.Direction.ASC, "_id");
+
     @DisplayName("Call getall URL without base URL")
     @Test
     void callGetAllUrlWithoutBaseUrl() throws Exception {
@@ -40,14 +45,14 @@ class PokedexControllerTest {
     @DisplayName("Call getall URL with success")
     @Test
     void callGetAllPokemonsWithSuccess() throws Exception {
-        when(service.getAllPokemons()).thenReturn(null);
+        when(service.getAllPokemons(any())).thenReturn(null);
 
         MvcResult result = mockMvc.perform(
                 get("/pokedex/")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(HttpStatus.OK.value())).andReturn();
 
-        verify(service, times(1)).getAllPokemons();
+        verify(service, times(1)).getAllPokemons(any());
     }
 
     @DisplayName("Get a pokemon by ID passing int return success")
@@ -70,7 +75,7 @@ class PokedexControllerTest {
     @Test
     void callGetPokemonByNameACorrectName() throws Exception {
         //WHEN
-        when(service.getPokemonName("Bulbasaur")).thenReturn(null);
+        when(service.getPokemonName("Bulbasaur", paging)).thenReturn(null);
 
         //ASSERT
         MvcResult result = mockMvc.perform(
@@ -79,14 +84,14 @@ class PokedexControllerTest {
                 .andExpect(status().is(HttpStatus.OK.value()))
                 .andReturn();
 
-        verify(service, times(1)).getPokemonName("Bulbasaur");
+        verify(service, times(1)).getPokemonName("Bulbasaur", paging);
     }
 
     @DisplayName("Should return pokemons with water type")
     @Test
     void callGetPokemonByType() throws Exception {
         //WHEN
-        when(service.getPokemonsByType("water")).thenReturn(null);
+        when(service.getPokemonsByType("water", paging)).thenReturn(null);
 
         //ASSERT
         MvcResult result = mockMvc.perform(
@@ -94,5 +99,5 @@ class PokedexControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(HttpStatus.OK.value())).andReturn();
 
-        verify(service, times(1)).getPokemonsByType("water");    }
+        verify(service, times(1)).getPokemonsByType("water", paging);    }
 }
