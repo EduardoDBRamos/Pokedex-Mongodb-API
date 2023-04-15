@@ -1,6 +1,7 @@
 package com.pokedex.service;
 
 import com.pokedex.model.Pokemon;
+import com.pokedex.model.PokemonDTO;
 import com.pokedex.repository.PokedexRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,27 +16,28 @@ public class PokedexService {
     @Autowired
     private PokedexRepository repository;
 
-    public  ResponseEntity<Page<Pokemon>> getAllPokemons(Pageable pageable) {
-        return ResponseEntity.ok().body(repository.findAll(pageable));
+    public  ResponseEntity<Page<PokemonDTO>> getAllPokemons(Pageable pageable) {
+        Page<Pokemon> pokemons = repository.findAll(pageable);
+        return ResponseEntity.ok().body(pokemons.map(PokemonDTO::new));
     }
-    public ResponseEntity<Pokemon> getPokemonId(long l) {
+    public ResponseEntity<PokemonDTO> getPokemonId(long l) {
         Optional<Pokemon> result = repository.findById(l);
-        return result.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        return result.map(PokemonDTO::new).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
-    public ResponseEntity<Page<Pokemon>> getPokemonName(String name, Pageable pageable) {
+    public ResponseEntity<Page<PokemonDTO>> getPokemonName(String name, Pageable pageable) {
         Page<Pokemon> pokemons = repository.findByNameRegex(name, pageable);
         if(pokemons.isEmpty()){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok().body(pokemons);
+        return ResponseEntity.ok().body(pokemons.map(PokemonDTO::new));
     }
 
-    public ResponseEntity<Page<Pokemon>> getPokemonsByType(String type, Pageable pageable) {
+    public ResponseEntity<Page<PokemonDTO>> getPokemonsByType(String type, Pageable pageable) {
         Page<Pokemon> pokemons = repository.findByTypeRegex(type, pageable);
         if(pokemons.isEmpty()){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok().body(pokemons);
+        return ResponseEntity.ok().body(pokemons.map(PokemonDTO::new));
     }
 }
