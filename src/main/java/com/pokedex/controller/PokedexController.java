@@ -1,6 +1,5 @@
 package com.pokedex.controller;
 
-import com.pokedex.constants.PokedexUrls;
 import com.pokedex.model.PokemonDTO;
 import com.pokedex.service.PokedexService;
 import io.swagger.annotations.Api;
@@ -18,7 +17,7 @@ import springfox.documentation.annotations.Cacheable;
 
 @Api
 @RestController
-@RequestMapping(PokedexUrls.URL_BASE)
+@RequestMapping("/pokedex")
 public class PokedexController {
     @Autowired
     PokedexService service;
@@ -30,12 +29,12 @@ public class PokedexController {
         return service.getAllPokemons(pageable);
     }
 
-    @GetMapping(PokedexUrls.GET_POKEMON_NUMBER+"/{number}")
+    @GetMapping("/number/{number}")
     public ResponseEntity<PokemonDTO> getPokemonId(@PathVariable(name = "number") Long number){
         return service.getPokemonId(number);
     }
 
-    @GetMapping(PokedexUrls.GET_POKEMON_NAME+"/{name}")
+    @GetMapping("/name/{name}")
     public ResponseEntity<Page<PokemonDTO>> getPokemonName(
             @PageableDefault(sort = "_id",
                     direction = Sort.Direction.ASC) Pageable pageable,
@@ -43,7 +42,7 @@ public class PokedexController {
         return service.getPokemonName(name, pageable);
     }
 
-    @GetMapping(PokedexUrls.GET_POKEMON_TYPE+"/{type}")
+    @GetMapping("/type/{type}")
     public ResponseEntity<Page<PokemonDTO>> getPokemonType(
             @PageableDefault(sort = "_id",
                     direction = Sort.Direction.ASC) Pageable pageable,
