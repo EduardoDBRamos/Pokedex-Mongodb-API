@@ -5,6 +5,8 @@ spring:
             port: 27017
             database: pokedex
             collection: pokemons
+    banner:
+        location: banner.txt
 logging:
     level:
         com: INFO
